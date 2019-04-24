@@ -14,12 +14,6 @@ rows = 14
 blocksNum = 300
 
 
-PLAYGROUND_WIDTH=700
-PLAYGROUND_HEIGHT=400
-PLAYGROUND_COLOR='powder blue'
-SNAKE_HEAD_COLOR="red"
-SNAKE_MOVING_SPEED=8
-
 def openImage (fPath):
   return ImageTk.PhotoImage(Image.open(fPath))
 
@@ -28,6 +22,10 @@ class Tank:
     def __init__(self, x, y, battleField, tankSizeX, tankSizeY):
         self.x=x
         self.y=y
+        self.flagUp = True
+        self.flagDown = True
+        self.flagRight = True
+        self.flagLeft = True
         self.tankSizeX = tankSizeX
         self.tankSizeY = tankSizeY
         self.dir="up"
@@ -40,34 +38,34 @@ class Tank:
 
     def tank_to_right (self, event):
         self.l["image"] = self.imgR
-        if self.x < columns-1 and self.dir == "right":
+        if self.x < columns-1 and self.dir == "right" and self.flagRight == True:
             self.x += 1
+            self.flagLeft = True
         self.dir="right"
-        print(self.x, " - ",self.y)
         self.l.place(x=self.x*self.tankSizeX, y=self.y*self.tankSizeY)
 
     def tank_to_up (self, event):
         self.l["image"] = self.imgU
-        if self.y > 0 and self.dir == "up":
+        if self.y > 0 and self.dir == "up" and self.flagUp == True:
             self.y -= 1
+            self.flagDown = True
         self.dir="up"
-        print(self.x, " - ",self.y)
         self.l.place(x=self.x*self.tankSizeX, y=self.y*self.tankSizeY)
 
     def tank_to_left (self, event):
         self.l["image"] = self.imgL
-        if self.x > 0 and self.dir == "left": 
+        if self.x > 0 and self.dir == "left" and self.flagLeft == True: 
             self.x -= 1
+            self.flagRight = True
         self.dir="left"
-        print(self.x, " - ",self.y)
         self.l.place(x=self.x*self.tankSizeX, y=self.y*self.tankSizeY)
 
     def tank_to_down (self, event):
         self.l["image"] = self.imgD
-        if self.y < rows-1 and self.dir == "down":
+        if self.y < rows-1 and self.dir == "down" and self.flagDown == True:
             self.y += 1
+            self.flagUp = True
         self.dir="down"
-        print(self.x, " - ",self.y)
         self.l.place(x=self.x*self.tankSizeX, y=self.y*self.tankSizeY)
 
     def bind_buttons(self, mode=1):
@@ -84,14 +82,17 @@ class Tank:
             self.l.bind('<S>', self.tank_to_down)
             self.l.bind('<A>', self.tank_to_left)
 
+    def get_tank_coords(self):
+    	return [self.x, self.y, self.dir]
 
 def gencoordinates(m, n):
     seen = []
     while len(seen)<blocksNum :
-        x, y = random.randint(1, m), random.randint(1,n)
+        x, y = random.randint(0, m), random.randint(0,n)
         seen.append(str(x) + "_" + str(y))
     return seen
  
+
 class main(tk.Tk):
     
     def __init__(self, *args, **kwargs):
@@ -121,13 +122,13 @@ class main(tk.Tk):
         self.battleField = Canvas(self.root, width=self.rootWidth, height=self.rootHeight, bd=0)
         self.battleField.grid(row=0, column=0,sticky=N+S+E+W,padx=5,pady=5, rowspan=2)
 
-        self.create_playground()
+        self.tanks = []
+        self.blockIds = []
+        self.create_tank(0,0,1)
+        self.create_playground(0,0)
         self.create_game_settings()
         self.creating_score_board()
-        self.tanks = []
-        self.create_tank(2,2,1)
-        #self.bind('<Any-KeyPress>',self.connecting_head_with_keys)
-
+        
     def create_tank (self, x, y, mode):
 
         self.tank = Tank(x, y, self.battleField, self.tankSizeX, self.tankSizeY)
@@ -146,7 +147,6 @@ class main(tk.Tk):
         self.score_battleField['text']="Score : {}".format(self.score)
         return
 
-    # Creating Snake Moving Settings
     def create_game_settings(self):
 
         self.roadmap=[(0,0)]
@@ -154,15 +154,15 @@ class main(tk.Tk):
         self.score=0
         return
 
-    def create_playground(self):
-        blockIds = gencoordinates(rows,columns)
+    def create_playground(self, x, y):
+        self.blockIds = gencoordinates(columns, rows)
         for i in range(columns):
             for j in range(rows):
-                bId = str(j) + "_" + str(i)
-                if blockIds.count(bId) > 0 :
+                bId = str(i) + "_" + str(j)
+                if self.blockIds.count(bId) > 0 and str(x)+"_"+str(y) != bId:
                     self.battleField.create_rectangle(i * self.tankSizeX, j * self.tankSizeY,
                             i * self.tankSizeX + self.tankSizeX,
-                            j * self.tankSizeY + self.tankSizeY, fill='#A64B00', outline="")
+                            j * self.tankSizeY + self.tankSizeY, fill='#A64B00', outline="", tag="blocks")
                 else :
                     self.battleField.create_rectangle(i * self.tankSizeX, j * self.tankSizeY,
                            i * self.tankSizeX + self.tankSizeX,
@@ -171,45 +171,55 @@ class main(tk.Tk):
 
     def tank_location(self):
 
-        self.battleField.move(self.tank,self.x,self.y)
-        x1,y1,x2,y2=self.battleField.coords(self.tank)
-        if x1<=0 or y1<=0:
-            self.x=0
-            self.y=0
-            self.game_loss()
-        elif self.rootHeight<=y2 or self.rootWidth<=x2:
-            self.x=0
-            self.y=0
-            self.game_loss()
-        return
+        xCord = self.tank.get_tank_coords()[0]
+        yCord = self.tank.get_tank_coords()[1]
+        tankDir = self.tank.get_tank_coords()[2]
 
-    def tank_block_location(self):
-        
-        if self.snake_target:
-            x1,y1,x2,y2=self.battleField.coords(self.snake_target)
-            if len(self.battleField.find_overlapping(x1,y1,x2,y2))!=1:
-                self.ba.delete("food")
-                self.update_score_board()
-        return
+        if  tankDir == "right" :
+
+        	if self.blockIds.count(str(xCord+1)+"_"+str(yCord)) > 0 :
+        		self.tank.flagRight = False
+        	else :
+        		self.tank.flagRight = True
+
+        elif  tankDir == "left" :
+
+        	if self.blockIds.count(str(xCord-1)+"_"+str(yCord)) > 0 :
+        		self.tank.flagLeft = False
+        	else :
+        		self.tank.flagLeft = True
+
+        elif  tankDir == "up":
+
+        	if self.blockIds.count(str(xCord)+"_"+str(yCord-1)) > 0 :
+        		self.tank.flagUp = False
+        	else :
+        		self.tank.flagUp = True
+
+        elif  tankDir == "down":
+
+        	if self.blockIds.count(str(xCord)+"_"+str(yCord+1)) > 0 :
+        		self.tank.flagDown = False
+        	else :
+        		self.tank.flagDown = True
 
     def re_update(self):
 
         self.tank_location()
-        self.tank_block_location()
         return
 
     def game_loss(self):
 
-        self.battleField.create_text(self.rootWidth/2,self.rootHeight/2,text="Game Over"
-                                ,font=('arial 60 bold'),fill='red')
+        self.battleField.create_text(self.rootWidth/2,self.rootHeight/2,
+        				text="Game Over" ,font=('arial 60 bold'),fill='red')
         self.gamevalid=0
         return
 
 
 if __name__ == '__main__':
-    root=main()
+    root = main()
     while True:
         root.update()
         root.update_idletasks()
-       # root.re_update()
+        root.re_update()
         time.sleep(0.09)
