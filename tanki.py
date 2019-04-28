@@ -1,80 +1,119 @@
 #!/usr/bin/env python3
 
 import tkinter as tk
-from tkinter import *
-import PIL
 from PIL import ImageTk, Image
 import sys
 import time, random
-from PIL import *
 
 # consts
 columns = 20
-rows = 14
-blocksNum = 300
+rows = 12
 
+blocsNum = 50
+
+cellSizeX = 50
+cellSizeY = 50
+
+rootWidth  = cellSizeX * (columns+1)
+rootHeight = cellSizeY * (rows+1)
+
+reloadTime = 5
+bulletSpeed = 2
+
+Tkroot = tk.Tk()
+Tkroot.configure(background = 'black')
+
+blocImage = ImageTk.PhotoImage(Image.open("bloc.png"))
+imgR = ImageTk.PhotoImage(Image.open("tank-right.png"))
+imgL = ImageTk.PhotoImage(Image.open("tank-left.png")) 
+imgU = ImageTk.PhotoImage(Image.open("tank-up.png")) 
+imgD = ImageTk.PhotoImage(Image.open("tank-down.png")) 
+bullRight = ImageTk.PhotoImage(Image.open("bullet-right.png"))
+bullLeft  = ImageTk.PhotoImage(Image.open("bullet-left.png")) 
+bullUp    = ImageTk.PhotoImage(Image.open("bullet-up.png")) 
+bullDown  = ImageTk.PhotoImage(Image.open("bullet-down.png")) 
 
 def openImage (fPath):
   return ImageTk.PhotoImage(Image.open(fPath))
 
 class Tank:
 
-    def __init__(self, x, y, battleField, tankSizeX, tankSizeY):
-        self.x=x
-        self.y=y
-        self.flagUp = True
-        self.flagDown = True
-        self.flagRight = True
-        self.flagLeft = True
-        self.tankSizeX = tankSizeX
-        self.tankSizeY = tankSizeY
+    def __init__(self, battleField, blocs):
+        self.known_blocs = blocs
+        while (True):
+            x, y = random.randint(0, columns), random.randint(0,rows)
+            if not((x,y) in self.known_blocs):
+              self.coords = (x, y)
+              break
         self.dir="up"
-        self.imgR=openImage("tank-right.png") 
-        self.imgL=openImage("tank-left.png") 
-        self.imgU=openImage("tank-up.png") 
-        self.imgD=openImage("tank-down.png") 
-        self.l=tk.Label(battleField, image=self.imgU, bd=0, height=tankSizeY-2, width=tankSizeX-2, compound="center")
-        self.l.place(x=self.x*tankSizeX, y=self.y*tankSizeY)
+        self.reload = reloadTime
+        self.bullets = []
+        self.l=tk.Label(
+            Tkroot, 
+            image=imgU, 
+            height=cellSizeY-4, 
+            width=cellSizeX-4
+            )
+        self.l.place(x=self.coords[0]*cellSizeX, y=self.coords[1]*cellSizeY)
 
     def tank_to_right (self, event):
-        self.l["image"] = self.imgR
-        if self.x < columns-1 and self.dir == "right" and self.flagRight == True:
-            self.x += 1
-            self.flagLeft = True
-        self.dir="right"
-        self.l.place(x=self.x*self.tankSizeX, y=self.y*self.tankSizeY)
+        self.l["image"] = imgR
+        if self.dir == "right":
+            new_coords = (self.coords[0] + 1, self.coords[1])
+            if new_coords[0] != columns+1 and not(new_coords in self.known_blocs):
+                self.coords = new_coords
+        else:
+            self.dir="right"
+        self.l.place(x=self.coords[0]*cellSizeX, y=self.coords[1]*cellSizeY)
 
     def tank_to_up (self, event):
-        self.l["image"] = self.imgU
-        if self.y > 0 and self.dir == "up" and self.flagUp == True:
-            self.y -= 1
-            self.flagDown = True
-        self.dir="up"
-        self.l.place(x=self.x*self.tankSizeX, y=self.y*self.tankSizeY)
+        self.l["image"] = imgU
+        if self.dir == "up":
+            new_coords = (self.coords[0], self.coords[1] - 1)
+            if new_coords[1] != -1 and not(new_coords in self.known_blocs):
+                self.coords = new_coords
+        else:
+            self.dir="up"
+        self.l.place(x=self.coords[0]*cellSizeX, y=self.coords[1]*cellSizeY)
 
     def tank_to_left (self, event):
-        self.l["image"] = self.imgL
-        if self.x > 0 and self.dir == "left" and self.flagLeft == True: 
-            self.x -= 1
-            self.flagRight = True
-        self.dir="left"
-        self.l.place(x=self.x*self.tankSizeX, y=self.y*self.tankSizeY)
+        self.l["image"] = imgL
+        if self.dir == "left":
+            new_coords = (self.coords[0] - 1, self.coords[1])
+            if new_coords[0] != -1 and not(new_coords in self.known_blocs):
+                self.coords = new_coords
+        else:
+            self.dir="left"
+        self.l.place(x=self.coords[0]*cellSizeX, y=self.coords[1]*cellSizeY)
 
     def tank_to_down (self, event):
-        self.l["image"] = self.imgD
-        if self.y < rows-1 and self.dir == "down" and self.flagDown == True:
-            self.y += 1
-            self.flagUp = True
-        self.dir="down"
-        self.l.place(x=self.x*self.tankSizeX, y=self.y*self.tankSizeY)
+        self.l["image"] = imgD
+        if self.dir == "down":
+            new_coords = (self.coords[0], self.coords[1] + 1)
+            if new_coords[1] != rows+1 and not(new_coords in self.known_blocs):
+                self.coords = new_coords
+        else:
+            self.dir="down"
+        self.l.place(x=self.coords[0]*cellSizeX, y=self.coords[1]*cellSizeY)
+
+    def tank_fire (self, event):
+        if self.reload == 0:
+            b = Bullet(self.coords, self.dir)
+            self.bullets.append(b)
+            self.reload = reloadTime
+
+    def quit (self, event):
+        Tkroot.destroy()
 
     def bind_buttons(self, mode=1):
         if mode == 1:
             self.l.focus_set()
+            self.l.bind('<Escape>', self.quit)
             self.l.bind('<Up>', self.tank_to_up)
             self.l.bind('<Right>', self.tank_to_right)
             self.l.bind('<Down>', self.tank_to_down)
             self.l.bind('<Left>', self.tank_to_left)
+            self.l.bind('<space>', self.tank_fire)
         if mode == 2:
             self.l.focus_set()
             self.l.bind('<W>', self.tank_to_up)
@@ -82,131 +121,95 @@ class Tank:
             self.l.bind('<S>', self.tank_to_down)
             self.l.bind('<A>', self.tank_to_left)
 
-    def get_tank_coords(self):
-    	return [self.x, self.y, self.dir]
 
-def gencoordinates(m, n):
-    seen = []
-    while len(seen)<blocksNum :
-        x, y = random.randint(0, m), random.randint(0,n)
-        seen.append(str(x) + "_" + str(y))
-    return seen
  
 
-class main(tk.Tk):
+class Field():
     
-    def __init__(self, *args, **kwargs):
-
-        tk.Tk.__init__(self, *args, **kwargs) 
-        self.resizable(False, False)
-
-        self.resizeW = self.winfo_screenwidth() / 1920
-        self.resizeH = self.winfo_screenheight() / 1080
-
-        self.rootWidth  = 50 * columns * self.resizeW
-        self.rootHeight = 50 * rows * self.resizeH
-        self.tankSizeX = 50 * self.resizeW
-        self.tankSizeY = 50 * self.resizeH
-
-        self.geometry('%dx%d+%d+%d' % (self.rootWidth+8*self.tankSizeX, self.rootHeight, 
-                        (self.winfo_screenwidth()-self.rootWidth)/2, 
-                        (self.winfo_screenheight()-self.rootHeight)/2))
-
-        self.root = Frame(self)
-        self.root.place(relx=0, rely=0, relheight=1, relwidth=1)
-        self.root.columnconfigure(0, weight=0)
-        self.root.columnconfigure(1, weight=1)
-        self.root.rowconfigure(0, weight=1)
-        self.root.rowconfigure(1, weight=1)
-
-        self.battleField = Canvas(self.root, width=self.rootWidth, height=self.rootHeight, bd=0)
-        self.battleField.grid(row=0, column=0,sticky=N+S+E+W,padx=5,pady=5, rowspan=2)
+    def __init__(self):
+        self.root = tk.Frame(Tkroot, width=2*cellSizeX, height=(rows+1)*cellSizeY)
+        self.root.place(x=(columns+1)*cellSizeX, y=0, )
 
         self.tanks = []
-        self.blockIds = []
-        self.create_tank(0,0,1)
-        self.create_playground(0,0)
+        self.tanks_coords = []        
+        self.blocs = []
+        self.blocs_coords = []
+        self.gen_blocs(columns,rows, blocsNum, self.tanks_coords)
+        self.add_tank(1, self.blocs_coords)
         self.create_game_settings()
         self.creating_score_board()
         
-    def create_tank (self, x, y, mode):
+    def get_tanks_coords(self):
 
-        self.tank = Tank(x, y, self.battleField, self.tankSizeX, self.tankSizeY)
-        self.tank.bind_buttons(mode)
-        self.tanks += [self.tank] 
+        self.tanks_coords = []
+        for tank in self.tanks:
+            self.tanks_coords.append(tank.coords)
+
+
+    def add_tank (self, mode, blocs):
+
+        tank = Tank(Tkroot, blocs)
+        tank.bind_buttons(mode)
+        self.tanks += [tank] 
+        self.tanks_coords = self.get_tanks_coords()
+
 
     def creating_score_board(self):
+        
+        self.board = tk.Frame(Tkroot)
+        self.score_battleField = tk.Label(Tkroot, text="Score : {}".format(self.score))
+        self.score_battleField.place(x=(columns+1)*cellSizeX, y=cellSizeY)
 
-        self.score_battleField = tk.Label(self.root, text="Score : {}".format(self.score))
-        self.score_battleField.grid(row=0,column=1,sticky=N+S+E+W)
-        return
 
     def update_score_battleField(self):
 
         self.score += 1
         self.score_battleField['text']="Score : {}".format(self.score)
-        return
+
 
     def create_game_settings(self):
 
         self.roadmap=[(0,0)]
         self.gamevalid=1
         self.score=0
-        return
 
-    def create_playground(self, x, y):
-        self.blockIds = gencoordinates(columns, rows)
-        for i in range(columns):
-            for j in range(rows):
-                bId = str(i) + "_" + str(j)
-                if self.blockIds.count(bId) > 0 and str(x)+"_"+str(y) != bId:
-                    self.battleField.create_rectangle(i * self.tankSizeX, j * self.tankSizeY,
-                            i * self.tankSizeX + self.tankSizeX,
-                            j * self.tankSizeY + self.tankSizeY, fill='#A64B00', outline="", tag="blocks")
-                else :
-                    self.battleField.create_rectangle(i * self.tankSizeX, j * self.tankSizeY,
-                           i * self.tankSizeX + self.tankSizeX,
-                           j * self.tankSizeY + self.tankSizeY, fill='black', outline="")
-        return
 
-    def tank_location(self):
+    def gen_blocs(self, m, n, max, tanks_coords):
+        while len(self.blocs_coords) < max:
+            x, y = random.randint(0, m), random.randint(0,n)
+            if not((x,y) in self.blocs_coords) and not((x,y) in tanks_coords):
+                self.blocs_coords.append((x,y))
+                self.blocs.append(Bloc(x, y))
 
-        xCord = self.tank.get_tank_coords()[0]
-        yCord = self.tank.get_tank_coords()[1]
-        tankDir = self.tank.get_tank_coords()[2]
+    def remove_bloc(self, coords):
+        for b in self.blocs:
+            if b.coords == coords:
+                b.l.destroy()
+                self.blocs.remove(b)
 
-        if  tankDir == "right" :
 
-        	if self.blockIds.count(str(xCord+1)+"_"+str(yCord)) > 0 :
-        		self.tank.flagRight = False
-        	else :
-        		self.tank.flagRight = True
+    def update_bullets(self):
+        
+        for tank in self.tanks:
+            if tank.reload > 0:
+                tank.reload -= 1
+            for bullet in tank.bullets:
+                if bullet.coords in self.blocs_coords:
+                    self.blocs_coords.remove(bullet.coords)
+                    bullet.l.destroy()
+                    self.remove_bloc(bullet.coords)
+                    tank.bullets.remove(bullet)
+                    self.update_score_battleField()
+                else:
+                    bullet.move_bullet()
+                    if (bullet.coords[0] < 0 or
+                       bullet.coords[1] < 0 or
+                       bullet.coords[0] > columns or
+                       bullet.coords[1] > rows):
+                        bullet.l.destroy()
+                        tank.bullets.remove(bullet)
 
-        elif  tankDir == "left" :
 
-        	if self.blockIds.count(str(xCord-1)+"_"+str(yCord)) > 0 :
-        		self.tank.flagLeft = False
-        	else :
-        		self.tank.flagLeft = True
-
-        elif  tankDir == "up":
-
-        	if self.blockIds.count(str(xCord)+"_"+str(yCord-1)) > 0 :
-        		self.tank.flagUp = False
-        	else :
-        		self.tank.flagUp = True
-
-        elif  tankDir == "down":
-
-        	if self.blockIds.count(str(xCord)+"_"+str(yCord+1)) > 0 :
-        		self.tank.flagDown = False
-        	else :
-        		self.tank.flagDown = True
-
-    def re_update(self):
-
-        self.tank_location()
-        return
 
     def game_loss(self):
 
@@ -215,11 +218,64 @@ class main(tk.Tk):
         self.gamevalid=0
         return
 
+class Bloc:
+    def __init__ (self, x, y):
+        self.coords = (x, y)
+        self.l=tk.Label(
+              Tkroot
+            , image = blocImage
+            , height = cellSizeY-4
+            , width = cellSizeX-4
+            )
+        self.l.place(x=self.coords[0]*cellSizeX, y=self.coords[1]*cellSizeY)
+
+class Bullet:
+    def __init__(self, coords, dir):
+        self.speed = bulletSpeed
+        self.dir = dir
+        if dir == "up":
+          bullIm = bullUp
+          self.coords = (coords[0], coords[1] - 1)
+        if dir == "left":
+          bullIm = bullLeft
+          self.coords = (coords[0] - 1, coords[1])
+        if dir == "right":
+          bullIm = bullRight
+          self.coords = (coords[0] + 1, coords[1])
+        if dir == "down":
+          bullIm = bullDown
+          self.coords = (coords[0], coords[1] + 1)
+        self.l=tk.Label(
+              Tkroot
+            , image = bullIm
+            , height = cellSizeY-4
+            , width = cellSizeX-4
+            )
+        self.l.place(x=self.coords[0]*cellSizeX, y=self.coords[1]*cellSizeY)
+
+    def move_bullet (self):
+        if self.speed == 0:
+            self.speed = bulletSpeed
+            if self.dir == "up":
+                self.coords = (self.coords[0], self.coords[1] - 1)
+            if self.dir == "down":
+                self.coords = (self.coords[0], self.coords[1] + 1)
+            if self.dir == "left":
+                self.coords = (self.coords[0] - 1, self.coords[1])
+            if self.dir == "right":
+                self.coords = (self.coords[0] + 1, self.coords[1])
+            self.l.place(x=self.coords[0]*cellSizeX, y=self.coords[1]*cellSizeY)
+        else:
+            self.speed -= 1;
 
 if __name__ == '__main__':
-    root = main()
+    Tkroot.resizable(False, False)
+
+    Tkroot.geometry(str(rootWidth + 2*cellSizeX) + "x" + str(rootHeight) + "+0+0")
+    field = Field()
+
     while True:
-        root.update()
-        root.update_idletasks()
-        root.re_update()
+        Tkroot.update()
+        Tkroot.update_idletasks()
+        field.update_bullets()
         time.sleep(0.09)
