@@ -10,7 +10,7 @@ import datetime
 columns = 20
 rows = 12
 
-blocksNum = 5
+blocksNum = 50
 
 cellSizeX = 50
 cellSizeY = 50
