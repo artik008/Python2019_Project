@@ -29,6 +29,19 @@ OSX = (TK_ROOT.winfo_screenwidth() - ROOT_WIDTH)/2
 OSY = (TK_ROOT.winfo_screenheight() - ROOT_HEIGHT)/2
 TK_ROOT.geometry('%dx%d+%d+%d' % (ROOT_WIDTH, ROOT_HEIGHT, OSX, OSY))
 
+BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("block.png"))
+STEEL_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("STEEL_BLOCK.png"))
+GRASS_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("GRASS_BLOCK.png"))
+IMG_R = ImageTk.PhotoImage(Image.open("tank-right.png"))
+IMG_LABEL = ImageTk.PhotoImage(Image.open("tank-left.png"))
+IMG_U = ImageTk.PhotoImage(Image.open("tank-up.png"))
+IMG_D = ImageTk.PhotoImage(Image.open("tank-down.png"))
+BULL_RIGHT = ImageTk.PhotoImage(Image.open("bullet-right.png"))
+BULL_LEFT = ImageTk.PhotoImage(Image.open("bullet-left.png"))
+BULL_UP = ImageTk.PhotoImage(Image.open("bullet-up.png"))
+BULL_DOWN = ImageTk.PhotoImage(Image.open("bullet-down.png"))
+
+
 def start_game():
     """ function generating starting menu """
 
@@ -48,21 +61,25 @@ def start_game():
         yes_answer.destroy()
         no_answer.destroy()
 
-        waiting_text = tk.Label(sub, text="Sorry, but it's impossible!\n Waiting for you!",
+        waiting_text = tk.Label(sub,
+                                text="Sorry, but it's impossible!\n/\
+                                Waiting for you!",
                                 bg="black", font=('arial 45 bold'),
                                 fg="white", justify="center")
-        waiting_text.place(x=ROOT_WIDTH/2-8*CELL_SIZE_X, y=ROOT_HEIGHT/2-2*CELL_SIZE_Y)
+        waiting_text.place(x=ROOT_WIDTH/2-8*CELL_SIZE_X,
+                           y=ROOT_HEIGHT/2-2*CELL_SIZE_Y)
 
         ready = tk.Button(sub, text="Ready!", width=15, height=3,
                           bg="white", fg="black",
                           font="Arial 20 bold", command=get_yes)
-        ready.place(x=ROOT_WIDTH/2 -3*CELL_SIZE_X, y=ROOT_HEIGHT/2+CELL_SIZE_Y)
-
+        ready.place(x=ROOT_WIDTH/2 - 3*CELL_SIZE_X,
+                    y=ROOT_HEIGHT/2 + CELL_SIZE_Y)
 
     start_game_text = tk.Label(sub, text="Let's start the battle!",
                                bg="black", font=('arial 45 bold'),
                                fg="white", justify="left")
-    start_game_text.place(x=ROOT_WIDTH/2-5*CELL_SIZE_X, y=ROOT_HEIGHT/2 - 2*CELL_SIZE_Y)
+    start_game_text.place(x=ROOT_WIDTH/2-5*CELL_SIZE_X,
+                          y=ROOT_HEIGHT/2 - 2*CELL_SIZE_Y)
 
     yes_answer = tk.Button(sub, text="Yes", width=15, height=3,
                            bg="white", fg="black",
@@ -74,22 +91,11 @@ def start_game():
                           font="Arial 20 bold", command=get_no)
     no_answer.place(x=ROOT_WIDTH/2 + 2*CELL_SIZE_X, y=ROOT_HEIGHT/2)
 
-BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("block.png"))
-STEEL_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("STEEL_BLOCK.png"))
-GRASS_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("GRASS_BLOCK.png"))
-IMG_R = ImageTk.PhotoImage(Image.open("tank-right.png"))
-IMG_LABEL = ImageTk.PhotoImage(Image.open("tank-left.png"))
-IMG_U = ImageTk.PhotoImage(Image.open("tank-up.png"))
-IMG_D = ImageTk.PhotoImage(Image.open("tank-down.png"))
-BULL_RIGHT = ImageTk.PhotoImage(Image.open("bullet-right.png"))
-BULL_LEFT = ImageTk.PhotoImage(Image.open("bullet-left.png"))
-BULL_UP = ImageTk.PhotoImage(Image.open("bullet-up.png"))
-BULL_DOWN = ImageTk.PhotoImage(Image.open("bullet-down.png"))
-
 
 def open_image(f_path):
     """ function opening pictures """
     return ImageTk.PhotoImage(Image.open(f_path))
+
 
 class Tank(object):
     """ class tank """
@@ -114,7 +120,8 @@ class Tank(object):
             height=CELL_SIZE_Y-4,
             width=CELL_SIZE_X-4
             )
-        self.label.place(x=self.coords[0]*CELL_SIZE_X, y=self.coords[1]*CELL_SIZE_Y)
+        self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                         y=self.coords[1]*CELL_SIZE_Y)
 
     def tank_to_right(self, event):
         """ tank move to the right direction """
@@ -124,8 +131,9 @@ class Tank(object):
             if new_coords in self.KNOWN_GRASS_BLOCKS:
                 self.label["image"] = GRASS_BLOCK_IMAGE
                 self.coords = new_coords
-            elif (new_coords[0] != COLUMNS+1 and not(new_coords in self.KNOWN_BLOCKS)
-                  and not new_coords in self.KNOWN_STEEL_BLOCKS):
+            elif (new_coords[0] != COLUMNS+1 and
+                  new_coords not in self.KNOWN_BLOCKS
+                  and new_coords not in self.KNOWN_STEEL_BLOCKS):
                 self.coords = new_coords
                 self.label["image"] = IMG_R
         else:
@@ -135,7 +143,8 @@ class Tank(object):
             else:
                 self.label["image"] = IMG_R
 
-        self.label.place(x=self.coords[0]*CELL_SIZE_X, y=self.coords[1]*CELL_SIZE_Y)
+        self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                         y=self.coords[1]*CELL_SIZE_Y)
 
     def tank_to_up(self, event):
         """ tank move to the up direction """
@@ -145,8 +154,8 @@ class Tank(object):
             if new_coords in self.KNOWN_GRASS_BLOCKS:
                 self.label["image"] = GRASS_BLOCK_IMAGE
                 self.coords = new_coords
-            elif (new_coords[1] != -1 and not(new_coords in self.KNOWN_BLOCKS)
-                  and not new_coords in self.KNOWN_STEEL_BLOCKS):
+            elif (new_coords[1] != -1 and new_coords not in self.KNOWN_BLOCKS
+                  and new_coords not in self.KNOWN_STEEL_BLOCKS):
                 self.coords = new_coords
                 self.label["image"] = IMG_U
         else:
@@ -156,7 +165,8 @@ class Tank(object):
             else:
                 self.label["image"] = IMG_U
 
-        self.label.place(x=self.coords[0]*CELL_SIZE_X, y=self.coords[1]*CELL_SIZE_Y)
+        self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                         y=self.coords[1]*CELL_SIZE_Y)
 
     def tank_to_left(self, event):
         """ tank move to the left direction """
@@ -166,8 +176,8 @@ class Tank(object):
             if new_coords in self.KNOWN_GRASS_BLOCKS:
                 self.label["image"] = GRASS_BLOCK_IMAGE
                 self.coords = new_coords
-            elif(new_coords[0] != -1 and not new_coords in self.KNOWN_BLOCKS
-                 and not new_coords in self.KNOWN_STEEL_BLOCKS):
+            elif(new_coords[0] != -1 and new_coords not in self.KNOWN_BLOCKS
+                 and new_coords not in self.KNOWN_STEEL_BLOCKS):
                 self.coords = new_coords
                 self.label["image"] = IMG_LABEL
         else:
@@ -177,7 +187,8 @@ class Tank(object):
             else:
                 self.label["image"] = IMG_LABEL
 
-        self.label.place(x=self.coords[0]*CELL_SIZE_X, y=self.coords[1]*CELL_SIZE_Y)
+        self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                         y=self.coords[1]*CELL_SIZE_Y)
 
     def tank_to_down(self, event):
         """ tank move to the down direction """
@@ -187,8 +198,9 @@ class Tank(object):
             if new_coords in self.KNOWN_GRASS_BLOCKS:
                 self.label["image"] = GRASS_BLOCK_IMAGE
                 self.coords = new_coords
-            elif (new_coords[1] != ROWS+1 and not new_coords in self.KNOWN_BLOCKS
-                  and not new_coords in self.KNOWN_STEEL_BLOCKS):
+            elif (new_coords[1] != ROWS+1 and
+                  new_coords not in self.KNOWN_BLOCKS
+                  and new_coords not in self.KNOWN_STEEL_BLOCKS):
                 self.coords = new_coords
                 self.label["image"] = IMG_D
         else:
@@ -198,7 +210,8 @@ class Tank(object):
             else:
                 self.label["image"] = IMG_D
 
-        self.label.place(x=self.coords[0]*CELL_SIZE_X, y=self.coords[1]*CELL_SIZE_Y)
+        self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                         y=self.coords[1]*CELL_SIZE_Y)
 
     def tank_fire(self, event):
         """ tank fires """
@@ -229,6 +242,7 @@ class Tank(object):
             self.label.bind('<D>', self.tank_to_right)
             self.label.bind('<S>', self.tank_to_down)
             self.label.bind('<A>', self.tank_to_left)
+
 
 class FIELD(object):
     """ class Field """
@@ -275,17 +289,21 @@ class FIELD(object):
         self.game_info_text = tk.Label(TK_ROOT, text="Game Info :",
                                        bg="black", font=('arial 15 bold'),
                                        fg="white", justify="left")
-        self.game_info_text.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2, y=2*CELL_SIZE_Y)
+        self.game_info_text.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2,
+                                  y=2*CELL_SIZE_Y)
 
-        self.score_text = tk.Label(TK_ROOT, text="BLOCKS left: {}".format(BLOCKS_NUM - self.score),
+        self.score_text = tk.Label(TK_ROOT, text="BLOCKS left: {}".
+                                   format(BLOCKS_NUM - self.score),
                                    bg="black", font=('arial 15 bold'),
                                    fg="white", justify="left")
-        self.score_text.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2, y=3*CELL_SIZE_Y)
+        self.score_text.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2,
+                              y=3*CELL_SIZE_Y)
 
         self.play_time = tk.Label(TK_ROOT, text="Time: {}".format(self.time),
                                   bg="black", font=('arial 15 bold'),
                                   fg="white", justify="left")
-        self.play_time.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2, y=4*CELL_SIZE_Y)
+        self.play_time.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2,
+                             y=4*CELL_SIZE_Y)
 
         self.q_btn = tk.Button(TK_ROOT, text='Exit', font='arial 11 bold',
                                bg="white", fg="black", width=10, height=3)
@@ -297,7 +315,8 @@ class FIELD(object):
 
         if self.gamevalid == 1:
             self.score += 1
-            self.score_text['text'] = "BLOCKS left: {}".format(BLOCKS_NUM - self.score)
+            self.score_text['text'] = "BLOCKS left: {}".\
+                                      format(BLOCKS_NUM - self.score)
 
     def create_game_settings(self):
         """ create time settings """
@@ -305,7 +324,7 @@ class FIELD(object):
         self.gamevalid = 1
         time_init = datetime.datetime.now()
         self.time_init = time_init.hour*3600 + time_init.minute*60 +\
-                         time_init.second
+            time_init.second
         self.time = self.time_init
 
     def gen_blocks(self, _m, _n, max_value, tanks_coords):
@@ -313,13 +332,15 @@ class FIELD(object):
 
         while len(self.BLOCKS_COORDS) < max_value:
             _x, _y = random.randint(0, _m), random.randint(0, _n)
-            if (_x, _y) not in self.BLOCKS_COORDS and (_x, _y) not in tanks_coords:
+            if((_x, _y) not in self.BLOCKS_COORDS and
+               (_x, _y) not in tanks_coords):
                 self.BLOCKS_COORDS.append((_x, _y))
                 self.BLOCKS.append(BLOCK(_x, _y))
 
         while len(self.STEEL_BLOCKS_COORDS) < max_value/2:
             _x, _y = random.randint(0, _m), random.randint(0, _n)
-            if((_x, _y) not in self.BLOCKS_COORDS and (_x, _y) not in tanks_coords and
+            if((_x, _y) not in self.BLOCKS_COORDS and
+               (_x, _y) not in tanks_coords and
                (_x, _y) not in self.STEEL_BLOCKS_COORDS):
                 self.STEEL_BLOCKS_COORDS.append((_x, _y))
                 self.STEEL_BLOCKS.append(STEEL_BLOCK(_x, _y))
@@ -390,10 +411,11 @@ class FIELD(object):
 
         if self.gamevalid == 1:
             time_now = datetime.datetime.now()
-            time_now_readable_format = time_now.hour*3600 + time_now.minute*60 +\
-                                        time_now.second
+            time_now_readable_format = time_now.hour*3600 +\
+                time_now.minute*60 + time_now.second
             self.time = time_now_readable_format - self.time_init
             self.play_time['text'] = "Time: {}".format(self.time)
+
 
 class BLOCK(object):
     """ class Block """
@@ -401,12 +423,14 @@ class BLOCK(object):
     def __init__(self, _x, _y):
         self.coords = (_x, _y)
         self.label = tk.Label(
-            TK_ROOT
-            , image=BLOCK_IMAGE
-            , height=CELL_SIZE_Y-4
-            , width=CELL_SIZE_X-4
+            TK_ROOT,
+            image=BLOCK_IMAGE,
+            height=CELL_SIZE_Y-4,
+            width=CELL_SIZE_X-4
             )
-        self.label.place(x=self.coords[0]*CELL_SIZE_X, y=self.coords[1]*CELL_SIZE_Y)
+        self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                         y=self.coords[1]*CELL_SIZE_Y)
+
 
 class STEEL_BLOCK(object):
     """ class Steel Block """
@@ -414,12 +438,14 @@ class STEEL_BLOCK(object):
     def __init__(self, _x, _y):
         self.coords = (_x, _y)
         self.label = tk.Label(
-            TK_ROOT
-            , image=STEEL_BLOCK_IMAGE
-            , height=CELL_SIZE_Y-4
-            , width=CELL_SIZE_X-4
+            TK_ROOT,
+            image=STEEL_BLOCK_IMAGE,
+            height=CELL_SIZE_Y-4,
+            width=CELL_SIZE_X-4
             )
-        self.label.place(x=self.coords[0]*CELL_SIZE_X, y=self.coords[1]*CELL_SIZE_Y)
+        self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                         y=self.coords[1]*CELL_SIZE_Y)
+
 
 class GRASS_BLOCK(object):
     """ class Grass Block """
@@ -428,12 +454,14 @@ class GRASS_BLOCK(object):
 
         self.coords = (_x, _y)
         self.label = tk.Label(
-            TK_ROOT
-            , image=GRASS_BLOCK_IMAGE
-            , height=CELL_SIZE_Y-4
-            , width=CELL_SIZE_X-4
+            TK_ROOT,
+            image=GRASS_BLOCK_IMAGE,
+            height=CELL_SIZE_Y-4,
+            width=CELL_SIZE_X-4
             )
-        self.label.place(x=self.coords[0]*CELL_SIZE_X, y=self.coords[1]*CELL_SIZE_Y)
+        self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                         y=self.coords[1]*CELL_SIZE_Y)
+
 
 class BULLET(object):
     """ class Bullet """
@@ -457,12 +485,13 @@ class BULLET(object):
             self.coords = (coords[0], coords[1] + 1)
 
         self.label = tk.Label(
-            TK_ROOT
-            , image=bull_im
-            , height=CELL_SIZE_Y-4
-            , width=CELL_SIZE_X-4
+            TK_ROOT,
+            image=bull_im,
+            height=CELL_SIZE_Y-4,
+            width=CELL_SIZE_X-4
             )
-        self.label.place(x=self.coords[0]*CELL_SIZE_X, y=self.coords[1]*CELL_SIZE_Y)
+        self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                         y=self.coords[1]*CELL_SIZE_Y)
 
     def move_bullet(self):
         """ moving bullet """
@@ -481,9 +510,11 @@ class BULLET(object):
             if self.dir == "right":
                 self.label.configure(image=BULL_RIGHT)
                 self.coords = (self.coords[0] + 1, self.coords[1])
-            self.label.place(x=self.coords[0]*CELL_SIZE_X, y=self.coords[1]*CELL_SIZE_Y)
+            self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                             y=self.coords[1]*CELL_SIZE_Y)
         else:
             self.speed -= 1
+
 
 def restart_game(result_time):
     """ restarting game to replay """
@@ -508,25 +539,34 @@ def restart_game(result_time):
     gameover_text = tk.Label(sub, text="Game over!",
                              bg="black", font=('arial 45 bold'),
                              fg="white", justify="left")
-    gameover_text.place(x=ROOT_WIDTH/2-5*CELL_SIZE_X, y=ROOT_HEIGHT/2 - 3*CELL_SIZE_Y)
+    gameover_text.place(x=ROOT_WIDTH/2-5*CELL_SIZE_X,
+                        y=ROOT_HEIGHT/2 - 3*CELL_SIZE_Y)
 
-    result_text = tk.Label(sub, text="You broke all BLOCKS in {} seconds".format(result_time),
-                           bg="black", fg="white", font="Arial 20 bold", justify="left")
-    result_text.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X, y=ROOT_HEIGHT/2-CELL_SIZE_Y)
+    result_text = tk.Label(sub, text="You broke all BLOCKS in {} seconds".
+                           format(result_time),
+                           bg="black", fg="white",
+                           font="Arial 20 bold", justify="left")
+    result_text.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
+                      y=ROOT_HEIGHT/2-CELL_SIZE_Y)
 
     restart_text = tk.Label(sub, text="Do you want to replay ?",
-                            bg="black", fg="white", font="Arial 40 bold", justify="left")
-    restart_text.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X, y=ROOT_HEIGHT/2 + CELL_SIZE_Y)
+                            bg="black", fg="white",
+                            font="Arial 40 bold", justify="left")
+    restart_text.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
+                       y=ROOT_HEIGHT/2 + CELL_SIZE_Y)
 
     yes_answer = tk.Button(sub, text="Yes", width=15, height=3,
                            background="white", foreground="black",
                            font="Arial 20 bold", command=get_yes)
-    yes_answer.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X, y=ROOT_HEIGHT/2+2.5*CELL_SIZE_Y)
+    yes_answer.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
+                     y=ROOT_HEIGHT/2+2.5*CELL_SIZE_Y)
 
     no_answer = tk.Button(sub, text="No", width=15, height=3,
                           background="white", foreground="black",
                           font="Arial 20 bold", command=get_no)
-    no_answer.place(x=ROOT_WIDTH/2 + 2*CELL_SIZE_X, y=ROOT_HEIGHT/2+2.5*CELL_SIZE_Y)
+    no_answer.place(x=ROOT_WIDTH/2 + 2*CELL_SIZE_X,
+                    y=ROOT_HEIGHT/2+2.5*CELL_SIZE_Y)
+
 
 if __name__ == '__main__':
 
