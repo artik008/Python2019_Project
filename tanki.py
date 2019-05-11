@@ -29,17 +29,17 @@ OSX = (TK_ROOT.winfo_screenwidth() - ROOT_WIDTH)/2
 OSY = (TK_ROOT.winfo_screenheight() - ROOT_HEIGHT)/2
 TK_ROOT.geometry('%dx%d+%d+%d' % (ROOT_WIDTH, ROOT_HEIGHT, OSX, OSY))
 
-BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("block.png"))
-STEEL_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("STEEL_BLOCK.png"))
-GRASS_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("GRASS_BLOCK.png"))
-IMG_R = ImageTk.PhotoImage(Image.open("tank-right.png"))
-IMG_LABEL = ImageTk.PhotoImage(Image.open("tank-left.png"))
-IMG_U = ImageTk.PhotoImage(Image.open("tank-up.png"))
-IMG_D = ImageTk.PhotoImage(Image.open("tank-down.png"))
-BULL_RIGHT = ImageTk.PhotoImage(Image.open("bullet-right.png"))
-BULL_LEFT = ImageTk.PhotoImage(Image.open("bullet-left.png"))
-BULL_UP = ImageTk.PhotoImage(Image.open("bullet-up.png"))
-BULL_DOWN = ImageTk.PhotoImage(Image.open("bullet-down.png"))
+BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("images/block.png"))
+STEEL_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("images/STEEL_BLOCK.png"))
+GRASS_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("images/GRASS_BLOCK.png"))
+IMG_R = ImageTk.PhotoImage(Image.open("images/tank-right.png"))
+IMG_LABEL = ImageTk.PhotoImage(Image.open("images/tank-left.png"))
+IMG_U = ImageTk.PhotoImage(Image.open("images/tank-up.png"))
+IMG_D = ImageTk.PhotoImage(Image.open("images/tank-down.png"))
+BULL_RIGHT = ImageTk.PhotoImage(Image.open("images/bullet-right.png"))
+BULL_LEFT = ImageTk.PhotoImage(Image.open("images/bullet-left.png"))
+BULL_UP = ImageTk.PhotoImage(Image.open("images/bullet-up.png"))
+BULL_DOWN = ImageTk.PhotoImage(Image.open("images/bullet-down.png"))
 
 
 def start_game():
