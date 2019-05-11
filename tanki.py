@@ -10,7 +10,7 @@ import datetime
 columns = 20
 rows = 12
 
-blocksNum = 50
+blocksNum = 5
 
 cellSizeX = 50
 cellSizeY = 50
@@ -18,12 +18,8 @@ cellSizeY = 50
 rootWidth  = cellSizeX * (columns+4)
 rootHeight = cellSizeY * (rows+1)
 
-
 reloadTime = 5
 bulletSpeed = 2
-
-# global variables
-resultTime = 0
 
 Tkroot = tk.Tk()
 Tkroot.title("City BattleField")
@@ -263,12 +259,12 @@ class Field():
         self.score_Text = tk.Label(Tkroot, text="Blocks left: {}".format(blocksNum - self.score),
                                     bg="black", font=('arial 15 bold'),
                                     fg="white", justify="left")
-        self.score_Text.place(x=(columns+2)*cellSizeX+0.25*cellSizeX/4, y=3*cellSizeY)
+        self.score_Text.place(x=(columns+2)*cellSizeX-cellSizeX/2, y=3*cellSizeY)
 
         self.play_time = tk.Label(Tkroot, text="Time: {}".format(self.time),
                                     bg="black", font=('arial 15 bold'),
                                     fg="white", justify="left")
-        self.play_time.place(x=(columns+2)*cellSizeX-cellSizeX/4, y=4*cellSizeY)
+        self.play_time.place(x=(columns+2)*cellSizeX-cellSizeX/2, y=4*cellSizeY)
 
         self.q_btn = tk.Button(Tkroot, text=u'Завершить', font='arial 11 bold', 
                             bg="white", fg="black", width=10, height=3,
@@ -319,7 +315,7 @@ class Field():
                 b.l.destroy()
                 self.blocks.remove(b)
                 if not self.blocks:
-                    
+
                     resultTime = self.time
 
                     for tank in self.tanks:
@@ -334,7 +330,7 @@ class Field():
                         gr_bl.l.destroy()
                         self.grass_blocks.remove(gr_bl)
 
-                    restart_game()
+                    restart_game(resultTime)
 
     def update_bullets(self):
         if self.gamevalid == 1:
@@ -448,7 +444,7 @@ class Bullet:
         else:
             self.speed -= 1;
 
-def restart_game():
+def restart_game(resultTime):
 
     sub = tk.Toplevel(Tkroot)
     sub.transient(Tkroot)
