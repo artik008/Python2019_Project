@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
   <head>
     <meta charset="utf-8" />
-    <title>Welcome to Tanks’s documentation! &#8212; Tanks 1.0.0 documentation</title>
+    <title>Добро пожаловать на страницу описания &#8212; документация Tanks 1.0.0</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -12,16 +12,17 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
+      <h3>Навигация</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="#">Tanks 1.0.0 documentation</a> &#187;</li> 
+          <a href="genindex.html" title="Алфавитный указатель"
+             accesskey="I">указатель</a></li>
+        <li class="nav-item nav-item-0"><a href="#">документация Tanks 1.0.0</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -30,20 +31,46 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-tanks-s-documentation">
-<h1>Welcome to Tanks’s documentation!<a class="headerlink" href="#welcome-to-tanks-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Project for python prak by Timur Bikbulatov and Artem Shitik</p>
-<img alt="_images/tanks.gif" src="_images/tanks.gif" />
-<div class="toctree-wrapper compound">
+  <div class="section" id="id1">
+<h1>Добро пожаловать на страницу описания<a class="headerlink" href="#id1" title="Ссылка на этот заголовок">¶</a></h1>
 </div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+<div class="section" id="battle-city">
+<h1>игры «Battle City»<a class="headerlink" href="#battle-city" title="Ссылка на этот заголовок">¶</a></h1>
+<p>Проект придуман и реализован студентами Бикбулатов Тимур (525 группа) и Шитик Артём (524 группа)</p>
+<div class="section" id="id2">
+<h2>Описание<a class="headerlink" href="#id2" title="Ссылка на этот заголовок">¶</a></h2>
+<p>Цель игры: найти спрятанное сокровище и наехать на него танком.</p>
+<p>У игрока есть возможность перемещаться по полю с помощью стрелок ВВЕРХ/ВНИЗ/ВЛЕВО/ВПРАВО, стрелять по кнопке ПРОБЕЛ</p>
+<dl class="simple">
+<dt>Поле содержит три типа блоков:</dt><dd><ul class="simple">
+<li><p>Трава - неразрушина, можно проходить насквозь</p></li>
+<li><p>Кирпичи - можно разрушить пулей, непроходим</p></li>
+<li><p>Сталь - нельзя разрушить, непроходим</p></li>
 </ul>
+</dd>
+</dl>
+<p>Также на поле есть сокровище, которе может быть спратано под Травой или Кирпичами. Для завершения игры необходимо найти и наехать на него.</p>
+<p>Время игры ограничено.</p>
+</div>
+<div class="section" id="id3">
+<h2>Стартовый экран / экран конца игры<a class="headerlink" href="#id3" title="Ссылка на этот заголовок">¶</a></h2>
+<img alt="_images/menu.png" src="_images/menu.png" />
+<p><em>Экран меню</em></p>
+<img alt="_images/exit.png" src="_images/exit.png" />
+<p><em>Экран конца игры</em></p>
+</div>
+<div class="section" id="id4">
+<h2>Игровой экран<a class="headerlink" href="#id4" title="Ссылка на этот заголовок">¶</a></h2>
+<img alt="_images/tanks.gif" src="_images/tanks.gif" />
+</div>
+<div class="section" id="id5">
+<h2>Запуск игры<a class="headerlink" href="#id5" title="Ссылка на этот заголовок">¶</a></h2>
+<p><cite>python3 tanki.py</cite></p>
+</div>
+<div class="section" id="id6">
+<h2>Запуск автотестов<a class="headerlink" href="#id6" title="Ссылка на этот заголовок">¶</a></h2>
+<p><cite>python -m unittest test.py</cite></p>
+</div>
 </div>
 
 
@@ -52,25 +79,32 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="#">Table of Contents</a></h3>
+  <h3><a href="#">Оглавление</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to Tanks’s documentation!</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#">Добро пожаловать на страницу описания</a></li>
+<li><a class="reference internal" href="#battle-city">игры «Battle City»</a><ul>
+<li><a class="reference internal" href="#id2">Описание</a></li>
+<li><a class="reference internal" href="#id3">Стартовый экран / экран конца игры</a></li>
+<li><a class="reference internal" href="#id4">Игровой экран</a></li>
+<li><a class="reference internal" href="#id5">Запуск игры</a></li>
+<li><a class="reference internal" href="#id6">Запуск автотестов</a></li>
+</ul>
+</li>
 </ul>
 
   <div role="note" aria-label="source link">
-    <h3>This Page</h3>
+    <h3>Эта страница</h3>
     <ul class="this-page-menu">
       <li><a href="_sources/index.rst.txt"
-            rel="nofollow">Show Source</a></li>
+            rel="nofollow">Исходный текст</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3>Быстрый поиск</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <input type="submit" value="Искать" />
     </form>
     </div>
 </div>
@@ -80,17 +114,17 @@
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
+      <h3>Навигация</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="nav-item nav-item-0"><a href="#">Tanks 1.0.0 documentation</a> &#187;</li> 
+          <a href="genindex.html" title="Алфавитный указатель"
+             >указатель</a></li>
+        <li class="nav-item nav-item-0"><a href="#">документация Tanks 1.0.0</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019, artik008 and IcemanTim.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+      Создано с помощью <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
     </div>
   </body>
 </html>
