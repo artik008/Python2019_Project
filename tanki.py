@@ -16,11 +16,11 @@ BLOCKS_NUM = 50
 CELL_SIZE_X = 50
 CELL_SIZE_Y = 50
 
-ROOT_WIDTH = CELL_SIZE_X * (COLUMNS+4)
+ROOT_WIDTH = CELL_SIZE_X * (COLUMNS+5)
 ROOT_HEIGHT = CELL_SIZE_Y * (ROWS+1)
 
 RELOAD_TIME = 5
-BULLET_SPEED = 2
+BULLET_SPEED = 5
 
 TK_ROOT = tk.Tk()
 TK_ROOT.title("City BattleField")
@@ -30,10 +30,11 @@ OSY = (TK_ROOT.winfo_screenheight() - ROOT_HEIGHT)/2
 TK_ROOT.geometry('%dx%d+%d+%d' % (ROOT_WIDTH, ROOT_HEIGHT, OSX, OSY))
 
 BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("images/block.png"))
-STEEL_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("images/STEEL_BLOCK.png"))
-GRASS_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("images/GRASS_BLOCK.png"))
+STEEL_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("images/steel_block.png"))
+GRASS_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("images/grass_block.png"))
+TREASURE_IMAGE = ImageTk.PhotoImage(Image.open("images/treasure.png"))
 IMG_R = ImageTk.PhotoImage(Image.open("images/tank-right.png"))
-IMG_LABEL = ImageTk.PhotoImage(Image.open("images/tank-left.png"))
+IMG_L = ImageTk.PhotoImage(Image.open("images/tank-left.png"))
 IMG_U = ImageTk.PhotoImage(Image.open("images/tank-up.png"))
 IMG_D = ImageTk.PhotoImage(Image.open("images/tank-down.png"))
 BULL_RIGHT = ImageTk.PhotoImage(Image.open("images/bullet-right.png"))
@@ -61,24 +62,30 @@ def start_game():
         yes_answer.destroy()
         no_answer.destroy()
 
-        waiting_text = tk.Label(sub,
-                                text="Sorry, but it's impossible!\n/\
-                                Waiting for you!",
-                                bg="black", font=('arial 45 bold'),
-                                fg="white", justify="center")
-        waiting_text.place(x=ROOT_WIDTH/2-8*CELL_SIZE_X,
-                           y=ROOT_HEIGHT/2-2*CELL_SIZE_Y)
+        waiting_text1 = tk.Label(sub,
+                                 text="Sorry, but it's impossible!",
+                                 bg="black", font=('arial 45 bold'),
+                                 fg="white", justify="center")
+        waiting_text1.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
+                            y=ROOT_HEIGHT/2-2*CELL_SIZE_Y)
+
+        waiting_text2 = tk.Label(sub,
+                                 text="Waiting for you!",
+                                 bg="black", font=('arial 45 bold'),
+                                 fg="white", justify="center")
+        waiting_text2.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
+                            y=ROOT_HEIGHT/2)
 
         ready = tk.Button(sub, text="Ready!", width=15, height=3,
                           bg="white", fg="black",
                           font="Arial 20 bold", command=get_yes)
         ready.place(x=ROOT_WIDTH/2 - 3*CELL_SIZE_X,
-                    y=ROOT_HEIGHT/2 + CELL_SIZE_Y)
+                    y=ROOT_HEIGHT/2 + 2*CELL_SIZE_Y)
 
     start_game_text = tk.Label(sub, text="Let's start the battle!",
                                bg="black", font=('arial 45 bold'),
                                fg="white", justify="left")
-    start_game_text.place(x=ROOT_WIDTH/2-5*CELL_SIZE_X,
+    start_game_text.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
                           y=ROOT_HEIGHT/2 - 2*CELL_SIZE_Y)
 
     yes_answer = tk.Button(sub, text="Yes", width=15, height=3,
@@ -100,17 +107,30 @@ def open_image(f_path):
 class Tank(object):
     """ class tank """
 
-    def __init__(self, BLOCKS, STEEL_BLOCKS, GRASS_BLOCKS):
+    def __init__(self, BLOCKS, STEEL_BLOCKS, GRASS_BLOCKS, TREASURE_BLOCK,
+                 BLOCKS_COORDS, STEEL_BLOCKS_COORDS, GRASS_BLOCKS_COORDS,
+                 TREASURE_BLOCK_COORDS, TIME):
+
         self.KNOWN_BLOCKS = BLOCKS
+        self.KNOWN_BLOCKS_COORDS = BLOCKS_COORDS
         self.KNOWN_STEEL_BLOCKS = STEEL_BLOCKS
+        self.KNOWN_STEEL_BLOCKS_COORDS = STEEL_BLOCKS_COORDS
         self.KNOWN_GRASS_BLOCKS = GRASS_BLOCKS
+        self.KNOWN_GRASS_BLOCKS_COORDS = GRASS_BLOCKS_COORDS
+        self.KNOWN_TREASURE_BLOCK = TREASURE_BLOCK
+        self.KNOWN_TREASURE_BLOCK_COORDS = TREASURE_BLOCK_COORDS
+        self.TIME = TIME
+        self.flag = 1
+
         while True:
             _x, _y = random.randint(0, COLUMNS), random.randint(0, ROWS)
-            if(not (_x, _y) in self.KNOWN_BLOCKS and
-               not (_x, _y) in self.KNOWN_STEEL_BLOCKS and
-               not (_x, _y) in self.KNOWN_GRASS_BLOCKS):
+            if(not (_x, _y) in self.KNOWN_BLOCKS_COORDS and
+               not (_x, _y) in self.KNOWN_STEEL_BLOCKS_COORDS and
+               not (_x, _y) in self.KNOWN_GRASS_BLOCKS_COORDS and
+               not (_x, _y) in self.KNOWN_TREASURE_BLOCK_COORDS):
                 self.coords = (_x, _y)
                 break
+
         self.dir = "up"
         self.reload = RELOAD_TIME
         self.bullets = []
@@ -123,95 +143,145 @@ class Tank(object):
         self.label.place(x=self.coords[0]*CELL_SIZE_X,
                          y=self.coords[1]*CELL_SIZE_Y)
 
+    def tank_found_treasure(self):
+        """ removing all widjets after finding treasure """
+
+        self.flag = 0
+
+        for _tr in self.KNOWN_TREASURE_BLOCK:
+            _tr.label.destroy()
+            self.KNOWN_TREASURE_BLOCK.remove(_tr)
+
+        self.label.destroy()
+
+        for st_bl in self.KNOWN_STEEL_BLOCKS:
+            st_bl.label.destroy()
+            self.KNOWN_STEEL_BLOCKS.remove(st_bl)
+
+        for gr_bl in self.KNOWN_GRASS_BLOCKS:
+            gr_bl.label.destroy()
+            self.KNOWN_GRASS_BLOCKS.remove(gr_bl)
+
+        for _bl in self.KNOWN_BLOCKS:
+            _bl.label.destroy()
+            self.KNOWN_BLOCKS.remove(_bl)
+
+        restart_game(self.TIME, 1)
+
     def tank_to_right(self, event):
         """ tank move to the right direction """
 
         if self.dir == "right":
             new_coords = (self.coords[0] + 1, self.coords[1])
-            if new_coords in self.KNOWN_GRASS_BLOCKS:
+            if new_coords in self.KNOWN_TREASURE_BLOCK_COORDS:
+                self.tank_found_treasure()
+                self.coords = new_coords
+            elif new_coords in self.KNOWN_GRASS_BLOCKS_COORDS:
                 self.label["image"] = GRASS_BLOCK_IMAGE
                 self.coords = new_coords
             elif (new_coords[0] != COLUMNS+1 and
-                  new_coords not in self.KNOWN_BLOCKS
-                  and new_coords not in self.KNOWN_STEEL_BLOCKS):
+                  new_coords not in self.KNOWN_BLOCKS_COORDS
+                  and new_coords not in self.KNOWN_STEEL_BLOCKS_COORDS):
                 self.coords = new_coords
                 self.label["image"] = IMG_R
+
         else:
             self.dir = "right"
-            if(self.coords[0], self.coords[1]) in self.KNOWN_GRASS_BLOCKS:
+            if((self.coords[0], self.coords[1]) in
+               self.KNOWN_GRASS_BLOCKS_COORDS):
                 self.label["image"] = GRASS_BLOCK_IMAGE
             else:
                 self.label["image"] = IMG_R
 
-        self.label.place(x=self.coords[0]*CELL_SIZE_X,
-                         y=self.coords[1]*CELL_SIZE_Y)
+        if self.flag == 1:
+            self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                             y=self.coords[1]*CELL_SIZE_Y)
 
     def tank_to_up(self, event):
         """ tank move to the up direction """
 
         if self.dir == "up":
             new_coords = (self.coords[0], self.coords[1] - 1)
-            if new_coords in self.KNOWN_GRASS_BLOCKS:
+            if new_coords in self.KNOWN_TREASURE_BLOCK_COORDS:
+                self.tank_found_treasure()
+                self.coords = new_coords
+            elif new_coords in self.KNOWN_GRASS_BLOCKS_COORDS:
                 self.label["image"] = GRASS_BLOCK_IMAGE
                 self.coords = new_coords
-            elif (new_coords[1] != -1 and new_coords not in self.KNOWN_BLOCKS
-                  and new_coords not in self.KNOWN_STEEL_BLOCKS):
+            elif (new_coords[1] != -1 and
+                  new_coords not in self.KNOWN_BLOCKS_COORDS
+                  and new_coords not in self.KNOWN_STEEL_BLOCKS_COORDS):
                 self.coords = new_coords
                 self.label["image"] = IMG_U
+
         else:
             self.dir = "up"
-            if (self.coords[0], self.coords[1]) in self.KNOWN_GRASS_BLOCKS:
+            if((self.coords[0], self.coords[1]) in
+               self.KNOWN_GRASS_BLOCKS_COORDS):
                 self.label["image"] = GRASS_BLOCK_IMAGE
             else:
                 self.label["image"] = IMG_U
 
-        self.label.place(x=self.coords[0]*CELL_SIZE_X,
-                         y=self.coords[1]*CELL_SIZE_Y)
+        if self.flag == 1:
+            self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                             y=self.coords[1]*CELL_SIZE_Y)
 
     def tank_to_left(self, event):
         """ tank move to the left direction """
 
         if self.dir == "left":
             new_coords = (self.coords[0] - 1, self.coords[1])
-            if new_coords in self.KNOWN_GRASS_BLOCKS:
+            if new_coords in self.KNOWN_TREASURE_BLOCK_COORDS:
+                self.tank_found_treasure()
+                self.coords = new_coords
+            elif new_coords in self.KNOWN_GRASS_BLOCKS_COORDS:
                 self.label["image"] = GRASS_BLOCK_IMAGE
                 self.coords = new_coords
-            elif(new_coords[0] != -1 and new_coords not in self.KNOWN_BLOCKS
-                 and new_coords not in self.KNOWN_STEEL_BLOCKS):
+            elif(new_coords[0] != -1 and
+                 new_coords not in self.KNOWN_BLOCKS_COORDS
+                 and new_coords not in self.KNOWN_STEEL_BLOCKS_COORDS):
                 self.coords = new_coords
-                self.label["image"] = IMG_LABEL
+                self.label["image"] = IMG_L
+
         else:
             self.dir = "left"
-            if (self.coords[0], self.coords[1]) in self.KNOWN_GRASS_BLOCKS:
+            if((self.coords[0], self.coords[1]) in
+               self.KNOWN_GRASS_BLOCKS_COORDS):
                 self.label["image"] = GRASS_BLOCK_IMAGE
             else:
-                self.label["image"] = IMG_LABEL
+                self.label["image"] = IMG_L
 
-        self.label.place(x=self.coords[0]*CELL_SIZE_X,
-                         y=self.coords[1]*CELL_SIZE_Y)
+        if self.flag == 1:
+            self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                             y=self.coords[1]*CELL_SIZE_Y)
 
     def tank_to_down(self, event):
         """ tank move to the down direction """
 
         if self.dir == "down":
             new_coords = (self.coords[0], self.coords[1] + 1)
-            if new_coords in self.KNOWN_GRASS_BLOCKS:
+            if new_coords in self.KNOWN_TREASURE_BLOCK_COORDS:
+                self.tank_found_treasure()
+                self.coords = new_coords
+            elif new_coords in self.KNOWN_GRASS_BLOCKS_COORDS:
                 self.label["image"] = GRASS_BLOCK_IMAGE
                 self.coords = new_coords
             elif (new_coords[1] != ROWS+1 and
-                  new_coords not in self.KNOWN_BLOCKS
-                  and new_coords not in self.KNOWN_STEEL_BLOCKS):
+                  new_coords not in self.KNOWN_BLOCKS_COORDS
+                  and new_coords not in self.KNOWN_STEEL_BLOCKS_COORDS):
                 self.coords = new_coords
                 self.label["image"] = IMG_D
         else:
             self.dir = "down"
-            if (self.coords[0], self.coords[1]) in self.KNOWN_GRASS_BLOCKS:
+            if((self.coords[0], self.coords[1]) in
+               self.KNOWN_GRASS_BLOCKS_COORDS):
                 self.label["image"] = GRASS_BLOCK_IMAGE
             else:
                 self.label["image"] = IMG_D
 
-        self.label.place(x=self.coords[0]*CELL_SIZE_X,
-                         y=self.coords[1]*CELL_SIZE_Y)
+        if self.flag == 1:
+            self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                             y=self.coords[1]*CELL_SIZE_Y)
 
     def tank_fire(self, event):
         """ tank fires """
@@ -254,14 +324,18 @@ class FIELD(object):
         self.BLOCKS = []
         self.STEEL_BLOCKS = []
         self.GRASS_BLOCKS = []
+        self.TREASURE_BLOCK = []
         self.BLOCKS_COORDS = []
         self.STEEL_BLOCKS_COORDS = []
         self.GRASS_BLOCKS_COORDS = []
+        self.TREASURE_BLOCK_COORDS = []
         self.score = 0
         self.gen_blocks(COLUMNS, ROWS, BLOCKS_NUM, self.tanks_coords)
-        self.add_tank(1, self.BLOCKS_COORDS, self.STEEL_BLOCKS_COORDS,
-                      self.GRASS_BLOCKS_COORDS)
         self.create_game_settings()
+        self.add_tank(1, self.BLOCKS, self.STEEL_BLOCKS, self.GRASS_BLOCKS,
+                      self.TREASURE_BLOCK, self.BLOCKS_COORDS,
+                      self.STEEL_BLOCKS_COORDS, self.GRASS_BLOCKS_COORDS,
+                      self.TREASURE_BLOCK_COORDS, self.time)
         self.creating_score_board()
 
     def get_tanks_coords(self):
@@ -271,15 +345,19 @@ class FIELD(object):
         for tank in self.tanks:
             self.tanks_coords.append(tank.coords)
 
-    def add_tank(self, mode, BLOCKS, STEEL_BLOCKS, GRASS_BLOCKS):
+    def add_tank(self, mode, BLOCKS, STEEL_BLOCKS, GRASS_BLOCKS,
+                 TREASURE_BLOCK, BLOCKS_COORDS, STEEL_BLOCKS_COORDS,
+                 GRASS_BLOCKS_COORDS, TREASURE_BLOCK_COORDS, TIME):
         """ adding tank to game """
 
-        tank = Tank(BLOCKS, STEEL_BLOCKS, GRASS_BLOCKS)
+        tank = Tank(BLOCKS, STEEL_BLOCKS, GRASS_BLOCKS, TREASURE_BLOCK,
+                    BLOCKS_COORDS, STEEL_BLOCKS_COORDS,
+                    GRASS_BLOCKS_COORDS, TREASURE_BLOCK_COORDS, TIME)
         tank.bind_buttons(mode)
         self.tanks += [tank]
         self.tanks_coords = self.get_tanks_coords()
 
-    def quit(self, event):
+    def quit(self):
         """ destroy all """
         TK_ROOT.destroy()
 
@@ -292,22 +370,23 @@ class FIELD(object):
         self.game_info_text.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2,
                                   y=2*CELL_SIZE_Y)
 
-        self.score_text = tk.Label(TK_ROOT, text="BLOCKS left: {}".
+        self.score_text = tk.Label(TK_ROOT, text="Blocks left: {}".
                                    format(BLOCKS_NUM - self.score),
                                    bg="black", font=('arial 15 bold'),
                                    fg="white", justify="left")
         self.score_text.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2,
                               y=3*CELL_SIZE_Y)
 
-        self.play_time = tk.Label(TK_ROOT, text="Time: {}".format(self.time),
+        self.play_time = tk.Label(TK_ROOT,
+                                  text="Time left: {}".format(65 - self.time),
                                   bg="black", font=('arial 15 bold'),
                                   fg="white", justify="left")
         self.play_time.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2,
                              y=4*CELL_SIZE_Y)
 
         self.q_btn = tk.Button(TK_ROOT, text='Exit', font='arial 11 bold',
-                               bg="white", fg="black", width=10, height=3)
-        self.q_btn.bind("<Button-1>", self.quit)
+                               bg="white", fg="black", width=10, height=3,
+                               command=self.quit)
         self.q_btn.place(x=(COLUMNS+2)*CELL_SIZE_X-13, y=7*CELL_SIZE_Y)
 
     def update_score(self):
@@ -315,7 +394,7 @@ class FIELD(object):
 
         if self.gamevalid == 1:
             self.score += 1
-            self.score_text['text'] = "BLOCKS left: {}".\
+            self.score_text['text'] = "Blocks left: {}".\
                                       format(BLOCKS_NUM - self.score)
 
     def create_game_settings(self):
@@ -354,6 +433,53 @@ class FIELD(object):
                 self.GRASS_BLOCKS_COORDS.append((_x, _y))
                 self.GRASS_BLOCKS.append(GRASS_BLOCK(_x, _y))
 
+        num_block = random.randint(0, max_value-1)
+        _x = self.BLOCKS_COORDS[num_block][0]
+        _y = self.BLOCKS_COORDS[num_block][1]
+
+        self.BLOCKS_COORDS.remove((_x, _y))
+        self.remove_block((_x, _y))
+
+        self.TREASURE_BLOCK_COORDS.append((_x, _y))
+        self.TREASURE_BLOCK.append(TREASURE_BLOCK(_x, _y))
+
+        self.BLOCKS_COORDS.append((_x, _y))
+        self.BLOCKS.append(BLOCK(_x, _y))
+
+    def remove_all_widjets_from_field(self, value):
+        """ removing all widjets from FIELD_ object """
+
+        self.gamevalid = 0
+
+        for _tr in self.TREASURE_BLOCK:
+            _tr.label.destroy()
+            self.TREASURE_BLOCK.remove(_tr)
+            self.TREASURE_BLOCK_COORDS.remove(_tr.coords)
+
+        for tank in self.tanks:
+            for bullet in tank.bullets:
+                bullet.label.destroy()
+                tank.bullets.remove(bullet)
+            tank.label.destroy()
+            self.tanks.remove(tank)
+
+        for st_bl in self.STEEL_BLOCKS:
+            st_bl.label.destroy()
+            self.STEEL_BLOCKS.remove(st_bl)
+            self.STEEL_BLOCKS_COORDS.remove(st_bl.coords)
+
+        for gr_bl in self.GRASS_BLOCKS:
+            gr_bl.label.destroy()
+            self.GRASS_BLOCKS.remove(gr_bl)
+            self.GRASS_BLOCKS_COORDS.remove(gr_bl.coords)
+
+        for _bl in self.BLOCKS:
+            _bl.label.destroy()
+            self.BLOCKS.remove(_bl)
+            self.BLOCKS_COORDS.remove(_bl.coords)
+
+        restart_game(self.time, value)
+
     def remove_block(self, coords):
         """ deleting blocks """
 
@@ -361,21 +487,6 @@ class FIELD(object):
             if _b.coords == coords:
                 _b.label.destroy()
                 self.BLOCKS.remove(_b)
-                if not self.BLOCKS:
-
-                    for tank in self.tanks:
-                        tank.label.destroy()
-                        self.tanks.remove(tank)
-
-                    for st_bl in self.STEEL_BLOCKS:
-                        st_bl.label.destroy()
-                        self.STEEL_BLOCKS.remove(st_bl)
-
-                    for gr_bl in self.GRASS_BLOCKS:
-                        gr_bl.label.destroy()
-                        self.GRASS_BLOCKS.remove(gr_bl)
-
-                    restart_game(self.time)
 
     def update_bullets(self):
         """ update bullet's movement """
@@ -385,7 +496,10 @@ class FIELD(object):
                 if tank.reload > 0:
                     tank.reload -= 1
                 for bullet in tank.bullets:
-                    if bullet.coords in self.BLOCKS_COORDS:
+                    if(bullet.coords in self.TREASURE_BLOCK_COORDS and
+                       bullet.coords not in self.BLOCKS_COORDS):
+                        self.remove_all_widjets_from_field(2)
+                    elif bullet.coords in self.BLOCKS_COORDS:
                         self.BLOCKS_COORDS.remove(bullet.coords)
                         bullet.label.destroy()
                         tank.bullets.remove(bullet)
@@ -414,7 +528,11 @@ class FIELD(object):
             time_now_readable_format = time_now.hour*3600 +\
                 time_now.minute*60 + time_now.second
             self.time = time_now_readable_format - self.time_init
-            self.play_time['text'] = "Time: {}".format(self.time)
+            if 65 - self.time == 0:
+                self.remove_all_widjets_from_field(0)
+            else:
+                self.play_time['text'] =\
+                    "Time left: {}".format(65 - self.time)
 
 
 class BLOCK(object):
@@ -458,6 +576,23 @@ class GRASS_BLOCK(object):
             image=GRASS_BLOCK_IMAGE,
             height=CELL_SIZE_Y-4,
             width=CELL_SIZE_X-4
+            )
+        self.label.place(x=self.coords[0]*CELL_SIZE_X,
+                         y=self.coords[1]*CELL_SIZE_Y)
+
+
+class TREASURE_BLOCK(object):
+    """ class Grass Block """
+
+    def __init__(self, _x, _y):
+
+        self.coords = (_x, _y)
+        self.label = tk.Label(
+            TK_ROOT,
+            image=TREASURE_IMAGE,
+            height=CELL_SIZE_Y-4,
+            width=CELL_SIZE_X-4,
+            bg="black"
             )
         self.label.place(x=self.coords[0]*CELL_SIZE_X,
                          y=self.coords[1]*CELL_SIZE_Y)
@@ -516,7 +651,7 @@ class BULLET(object):
             self.speed -= 1
 
 
-def restart_game(result_time):
+def restart_game(result_time, result):
     """ restarting game to replay """
 
     sub = tk.Toplevel(TK_ROOT)
@@ -535,19 +670,30 @@ def restart_game(result_time):
         sub.destroy()
         start_game()
         FIELD_.__init__()
-
     gameover_text = tk.Label(sub, text="Game over!",
                              bg="black", font=('arial 45 bold'),
                              fg="white", justify="left")
-    gameover_text.place(x=ROOT_WIDTH/2-5*CELL_SIZE_X,
+    gameover_text.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
                         y=ROOT_HEIGHT/2 - 3*CELL_SIZE_Y)
 
-    result_text = tk.Label(sub, text="You broke all BLOCKS in {} seconds".
-                           format(result_time),
-                           bg="black", fg="white",
-                           font="Arial 20 bold", justify="left")
+    result_text = tk.Label(sub, bg="black", fg="white",
+                           font="Arial 30 bold", justify="left")
     result_text.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
-                      y=ROOT_HEIGHT/2-CELL_SIZE_Y)
+                      y=ROOT_HEIGHT/2 - CELL_SIZE_Y)
+
+    if result == 1:
+        time_now = datetime.datetime.now()
+        time_now_readable_format = (time_now.hour*3600 +
+                                    time_now.minute*60 + time_now.second)
+        res_time = time_now_readable_format - result_time
+        result_text.configure(text="You found the treasure in {} seconds".
+                              format(res_time))
+    elif result == 0:
+        result_text.configure(
+            text="You didn't find the treasure in {} seconds".
+            format(result_time))
+    else:
+        result_text.configure(text="You destroyed the TREASURE !!!")
 
     restart_text = tk.Label(sub, text="Do you want to replay ?",
                             bg="black", fg="white",
@@ -559,13 +705,13 @@ def restart_game(result_time):
                            background="white", foreground="black",
                            font="Arial 20 bold", command=get_yes)
     yes_answer.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
-                     y=ROOT_HEIGHT/2+2.5*CELL_SIZE_Y)
+                     y=ROOT_HEIGHT/2 + 2.5*CELL_SIZE_Y)
 
     no_answer = tk.Button(sub, text="No", width=15, height=3,
                           background="white", foreground="black",
                           font="Arial 20 bold", command=get_no)
     no_answer.place(x=ROOT_WIDTH/2 + 2*CELL_SIZE_X,
-                    y=ROOT_HEIGHT/2+2.5*CELL_SIZE_Y)
+                    y=ROOT_HEIGHT/2 + 2.5*CELL_SIZE_Y)
 
 
 if __name__ == '__main__':
