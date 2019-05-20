@@ -148,24 +148,6 @@ class Tank(object):
 
         self.flag = 0
 
-        for _tr in self.KNOWN_TREASURE_BLOCK:
-            _tr.label.destroy()
-            self.KNOWN_TREASURE_BLOCK.remove(_tr)
-
-        self.label.destroy()
-
-        for st_bl in self.KNOWN_STEEL_BLOCKS:
-            st_bl.label.destroy()
-            self.KNOWN_STEEL_BLOCKS.remove(st_bl)
-
-        for gr_bl in self.KNOWN_GRASS_BLOCKS:
-            gr_bl.label.destroy()
-            self.KNOWN_GRASS_BLOCKS.remove(gr_bl)
-
-        for _bl in self.KNOWN_BLOCKS:
-            _bl.label.destroy()
-            self.KNOWN_BLOCKS.remove(_bl)
-
         restart_game(self.TIME, 1)
 
     def tank_to_right(self, event):
@@ -446,38 +428,14 @@ class FIELD(object):
         self.BLOCKS_COORDS.append((_x, _y))
         self.BLOCKS.append(BLOCK(_x, _y))
 
+        print(len(self.STEEL_BLOCKS), " == ")
+        print(len(self.GRASS_BLOCKS), " == ")
+        print(len(self.BLOCKS), " == ")
+
     def remove_all_widjets_from_field(self, value):
         """ removing all widjets from FIELD_ object """
 
         self.gamevalid = 0
-
-        for _tr in self.TREASURE_BLOCK:
-            _tr.label.destroy()
-            self.TREASURE_BLOCK.remove(_tr)
-            self.TREASURE_BLOCK_COORDS.remove(_tr.coords)
-
-        for tank in self.tanks:
-            for bullet in tank.bullets:
-                bullet.label.destroy()
-                tank.bullets.remove(bullet)
-            tank.label.destroy()
-            self.tanks.remove(tank)
-
-        for st_bl in self.STEEL_BLOCKS:
-            st_bl.label.destroy()
-            self.STEEL_BLOCKS.remove(st_bl)
-            self.STEEL_BLOCKS_COORDS.remove(st_bl.coords)
-
-        for gr_bl in self.GRASS_BLOCKS:
-            gr_bl.label.destroy()
-            self.GRASS_BLOCKS.remove(gr_bl)
-            self.GRASS_BLOCKS_COORDS.remove(gr_bl.coords)
-
-        for _bl in self.BLOCKS:
-            _bl.label.destroy()
-            self.BLOCKS.remove(_bl)
-            self.BLOCKS_COORDS.remove(_bl.coords)
-
         restart_game(self.time, value)
 
     def remove_block(self, coords):
@@ -534,6 +492,40 @@ class FIELD(object):
                 self.play_time['text'] =\
                     "Time left: {}".format(65 - self.time)
 
+    def __del__(self):
+
+        while(len(self.TREASURE_BLOCK) != 0):
+            for _tr in self.TREASURE_BLOCK:
+                _tr.label.destroy()
+                self.TREASURE_BLOCK.remove(_tr)
+                self.TREASURE_BLOCK_COORDS.remove(_tr.coords)
+
+        while(len(self.tanks) != 0):
+            for tank in self.tanks:
+                while(len(tank.bullets) != 0):
+                    for bullet in tank.bullets:
+                        bullet.label.destroy()
+                        tank.bullets.remove(bullet)
+                tank.label.destroy()
+                self.tanks.remove(tank)
+
+        while(len(self.STEEL_BLOCKS) != 0):
+            for st_bl in self.STEEL_BLOCKS:
+                st_bl.label.destroy()
+                self.STEEL_BLOCKS.remove(st_bl)
+                self.STEEL_BLOCKS_COORDS.remove(st_bl.coords)
+
+        while(len(self.GRASS_BLOCKS) != 0):
+            for gr_bl in self.GRASS_BLOCKS:
+                gr_bl.label.destroy()
+                self.GRASS_BLOCKS.remove(gr_bl)
+                self.GRASS_BLOCKS_COORDS.remove(gr_bl.coords)
+
+        while(len(self.BLOCKS) != 0):
+            for _bl in self.BLOCKS:
+                _bl.label.destroy()
+                self.BLOCKS.remove(_bl)
+                self.BLOCKS_COORDS.remove(_bl.coords)
 
 class BLOCK(object):
     """ class Block """
@@ -662,6 +654,7 @@ def restart_game(result_time, result):
 
     def get_no():
         """ destroy all frames """
+        FIELD_.__del__()
         sub.destroy()
         TK_ROOT.destroy()
 
@@ -669,6 +662,7 @@ def restart_game(result_time, result):
         """ restart game """
         sub.destroy()
         start_game()
+        FIELD_.__del__()
         FIELD_.__init__()
     gameover_text = tk.Label(sub, text="Game over!",
                              bg="black", font=('arial 45 bold'),
