@@ -107,17 +107,12 @@ def open_image(f_path):
 class Tank(object):
     """ class tank """
 
-    def __init__(self, BLOCKS, STEEL_BLOCKS, GRASS_BLOCKS, TREASURE_BLOCK,
-                 BLOCKS_COORDS, STEEL_BLOCKS_COORDS, GRASS_BLOCKS_COORDS,
-                 TREASURE_BLOCK_COORDS, TIME):
+    def __init__(self, BLOCKS_COORDS, STEEL_BLOCKS_COORDS,
+                 GRASS_BLOCKS_COORDS, TREASURE_BLOCK_COORDS, TIME):
 
-        self.KNOWN_BLOCKS = BLOCKS
         self.KNOWN_BLOCKS_COORDS = BLOCKS_COORDS
-        self.KNOWN_STEEL_BLOCKS = STEEL_BLOCKS
         self.KNOWN_STEEL_BLOCKS_COORDS = STEEL_BLOCKS_COORDS
-        self.KNOWN_GRASS_BLOCKS = GRASS_BLOCKS
         self.KNOWN_GRASS_BLOCKS_COORDS = GRASS_BLOCKS_COORDS
-        self.KNOWN_TREASURE_BLOCK = TREASURE_BLOCK
         self.KNOWN_TREASURE_BLOCK_COORDS = TREASURE_BLOCK_COORDS
         self.TIME = TIME
         self.flag = 1
@@ -146,9 +141,10 @@ class Tank(object):
     def tank_found_treasure(self):
         """ removing all widjets after finding treasure """
 
-        self.flag = 0
-
+        if(self.coords == self.KNOWN_TREASURE_BLOCK_COORDS[0]):
+            self.flag = 0
         restart_game(self.TIME, 1)
+        return self.flag
 
     def tank_to_right(self, event):
         """ tank move to the right direction """
@@ -156,8 +152,8 @@ class Tank(object):
         if self.dir == "right":
             new_coords = (self.coords[0] + 1, self.coords[1])
             if new_coords in self.KNOWN_TREASURE_BLOCK_COORDS:
-                self.tank_found_treasure()
                 self.coords = new_coords
+                self.tank_found_treasure()
             elif new_coords in self.KNOWN_GRASS_BLOCKS_COORDS:
                 self.label["image"] = GRASS_BLOCK_IMAGE
                 self.coords = new_coords
@@ -185,8 +181,8 @@ class Tank(object):
         if self.dir == "up":
             new_coords = (self.coords[0], self.coords[1] - 1)
             if new_coords in self.KNOWN_TREASURE_BLOCK_COORDS:
-                self.tank_found_treasure()
                 self.coords = new_coords
+                self.tank_found_treasure()
             elif new_coords in self.KNOWN_GRASS_BLOCKS_COORDS:
                 self.label["image"] = GRASS_BLOCK_IMAGE
                 self.coords = new_coords
@@ -214,8 +210,8 @@ class Tank(object):
         if self.dir == "left":
             new_coords = (self.coords[0] - 1, self.coords[1])
             if new_coords in self.KNOWN_TREASURE_BLOCK_COORDS:
-                self.tank_found_treasure()
                 self.coords = new_coords
+                self.tank_found_treasure()
             elif new_coords in self.KNOWN_GRASS_BLOCKS_COORDS:
                 self.label["image"] = GRASS_BLOCK_IMAGE
                 self.coords = new_coords
@@ -243,8 +239,8 @@ class Tank(object):
         if self.dir == "down":
             new_coords = (self.coords[0], self.coords[1] + 1)
             if new_coords in self.KNOWN_TREASURE_BLOCK_COORDS:
-                self.tank_found_treasure()
                 self.coords = new_coords
+                self.tank_found_treasure()
             elif new_coords in self.KNOWN_GRASS_BLOCKS_COORDS:
                 self.label["image"] = GRASS_BLOCK_IMAGE
                 self.coords = new_coords
@@ -314,10 +310,9 @@ class FIELD(object):
         self.score = 0
         self.gen_blocks(COLUMNS, ROWS, BLOCKS_NUM, self.tanks_coords)
         self.create_game_settings()
-        self.add_tank(1, self.BLOCKS, self.STEEL_BLOCKS, self.GRASS_BLOCKS,
-                      self.TREASURE_BLOCK, self.BLOCKS_COORDS,
-                      self.STEEL_BLOCKS_COORDS, self.GRASS_BLOCKS_COORDS,
-                      self.TREASURE_BLOCK_COORDS, self.time)
+        self.add_tank(1, self.BLOCKS_COORDS, self.STEEL_BLOCKS_COORDS,
+                      self.GRASS_BLOCKS_COORDS, self.TREASURE_BLOCK_COORDS,
+                      self.time)
         self.creating_score_board()
 
     def get_tanks_coords(self):
@@ -327,13 +322,11 @@ class FIELD(object):
         for tank in self.tanks:
             self.tanks_coords.append(tank.coords)
 
-    def add_tank(self, mode, BLOCKS, STEEL_BLOCKS, GRASS_BLOCKS,
-                 TREASURE_BLOCK, BLOCKS_COORDS, STEEL_BLOCKS_COORDS,
+    def add_tank(self, mode, BLOCKS_COORDS, STEEL_BLOCKS_COORDS,
                  GRASS_BLOCKS_COORDS, TREASURE_BLOCK_COORDS, TIME):
         """ adding tank to game """
 
-        tank = Tank(BLOCKS, STEEL_BLOCKS, GRASS_BLOCKS, TREASURE_BLOCK,
-                    BLOCKS_COORDS, STEEL_BLOCKS_COORDS,
+        tank = Tank(BLOCKS_COORDS, STEEL_BLOCKS_COORDS,
                     GRASS_BLOCKS_COORDS, TREASURE_BLOCK_COORDS, TIME)
         tank.bind_buttons(mode)
         self.tanks += [tank]
@@ -359,10 +352,10 @@ class FIELD(object):
         self.score_text.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2,
                               y=3*CELL_SIZE_Y)
 
-        self.play_time = tk.Label(TK_ROOT,
-                                  text="Time left: {}".format(65 - self.time),
-                                  bg="black", font=('arial 15 bold'),
-                                  fg="white", justify="left")
+        self.play_time = tk.Label(TK_ROOT, text="Time left: {}".
+                                  format(65 - self.time), bg="black",
+                                  font=('arial 15 bold'), fg="white",
+                                  justify="left")
         self.play_time.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2,
                              y=4*CELL_SIZE_Y)
 
@@ -428,15 +421,12 @@ class FIELD(object):
         self.BLOCKS_COORDS.append((_x, _y))
         self.BLOCKS.append(BLOCK(_x, _y))
 
-        print(len(self.STEEL_BLOCKS), " == ")
-        print(len(self.GRASS_BLOCKS), " == ")
-        print(len(self.BLOCKS), " == ")
-
     def remove_all_widjets_from_field(self, value):
         """ removing all widjets from FIELD_ object """
 
         self.gamevalid = 0
         restart_game(self.time, value)
+        return self.gamevalid
 
     def remove_block(self, coords):
         """ deleting blocks """
@@ -526,6 +516,7 @@ class FIELD(object):
                 _bl.label.destroy()
                 self.BLOCKS.remove(_bl)
                 self.BLOCKS_COORDS.remove(_bl.coords)
+
 
 class BLOCK(object):
     """ class Block """
