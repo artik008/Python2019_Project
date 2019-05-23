@@ -7,6 +7,12 @@ import datetime
 import tkinter as tk
 from PIL import ImageTk, Image
 
+import gettext
+
+ru = gettext.translation('messages', localedir='locales', languages=['ru'])
+ru.install()
+_ = ru.gettext
+
 # consts
 COLUMNS = 20
 ROWS = 12
@@ -23,7 +29,7 @@ RELOAD_TIME = 5
 BULLET_SPEED = 5
 
 TK_ROOT = tk.Tk()
-TK_ROOT.title("City BattleField")
+TK_ROOT.title(_("City BattleField"))
 TK_ROOT.configure(background='black')
 OSX = (TK_ROOT.winfo_screenwidth() - ROOT_WIDTH)/2
 OSY = (TK_ROOT.winfo_screenheight() - ROOT_HEIGHT)/2
@@ -49,7 +55,7 @@ def start_game():
 
     sub = tk.Toplevel(TK_ROOT)
     sub.transient(TK_ROOT)
-    sub.title('Starting game')
+    sub.title(_('Starting game'))
     sub.configure(background='black')
     sub.geometry('%dx%d+%d+%d' % (ROOT_WIDTH, ROOT_HEIGHT, OSX, OSY))
 
@@ -64,37 +70,37 @@ def start_game():
         no_answer.destroy()
 
         waiting_text1 = tk.Label(sub,
-                                 text="Sorry, but it's impossible!",
+                                 text=_("Sorry, but it's impossible!"),
                                  bg="black", font=('arial 45 bold'),
                                  fg="white", justify="center")
         waiting_text1.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
                             y=ROOT_HEIGHT/2-2*CELL_SIZE_Y)
 
         waiting_text2 = tk.Label(sub,
-                                 text="Waiting for you!",
+                                 text=_("Waiting for you!"),
                                  bg="black", font=('arial 45 bold'),
                                  fg="white", justify="center")
         waiting_text2.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
                             y=ROOT_HEIGHT/2)
 
-        ready = tk.Button(sub, text="Ready!", width=15, height=3,
+        ready = tk.Button(sub, text=_("Ready!"), width=15, height=3,
                           bg="white", fg="black",
                           font="Arial 20 bold", command=get_yes)
         ready.place(x=ROOT_WIDTH/2 - 3*CELL_SIZE_X,
                     y=ROOT_HEIGHT/2 + 2*CELL_SIZE_Y)
 
-    start_game_text = tk.Label(sub, text="Let's start the battle!",
+    start_game_text = tk.Label(sub, text=_("Let's start the battle!"),
                                bg="black", font=('arial 45 bold'),
                                fg="white", justify="left")
     start_game_text.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
                           y=ROOT_HEIGHT/2 - 2*CELL_SIZE_Y)
 
-    yes_answer = tk.Button(sub, text="Yes", width=15, height=3,
+    yes_answer = tk.Button(sub, text=_("Yes"), width=15, height=3,
                            bg="white", fg="black",
                            font="Arial 20 bold", command=get_yes)
     yes_answer.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X, y=ROOT_HEIGHT/2)
 
-    no_answer = tk.Button(sub, text="No", width=15, height=3,
+    no_answer = tk.Button(sub, text=_("No"), width=15, height=3,
                           bg="white", fg="black",
                           font="Arial 20 bold", command=get_no)
     no_answer.place(x=ROOT_WIDTH/2 + 2*CELL_SIZE_X, y=ROOT_HEIGHT/2)
@@ -340,27 +346,27 @@ class FIELD(object):
     def creating_score_board(self):
         """ creating score info """
 
-        self.game_info_text = tk.Label(TK_ROOT, text="Game Info :",
+        self.game_info_text = tk.Label(TK_ROOT, text=_("Game Info :"),
                                        bg="black", font=('arial 15 bold'),
                                        fg="white", justify="left")
         self.game_info_text.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2,
                                   y=2*CELL_SIZE_Y)
 
-        self.score_text = tk.Label(TK_ROOT, text="Blocks left: {}".
+        self.score_text = tk.Label(TK_ROOT, text=_("Blocks left: {}").
                                    format(BLOCKS_NUM - self.score),
                                    bg="black", font=('arial 15 bold'),
                                    fg="white", justify="left")
         self.score_text.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2,
                               y=3*CELL_SIZE_Y)
 
-        self.play_time = tk.Label(TK_ROOT, text="Time left: {}".
+        self.play_time = tk.Label(TK_ROOT, text=_("Time left: {}").
                                   format(65 - self.time), bg="black",
                                   font=('arial 15 bold'), fg="white",
                                   justify="left")
         self.play_time.place(x=(COLUMNS+2)*CELL_SIZE_X-CELL_SIZE_X/2,
                              y=4*CELL_SIZE_Y)
 
-        self.q_btn = tk.Button(TK_ROOT, text='Exit', font='arial 11 bold',
+        self.q_btn = tk.Button(TK_ROOT, text=_('Exit'), font='arial 11 bold',
                                bg="white", fg="black", width=10, height=3,
                                command=self.quit)
         self.q_btn.place(x=(COLUMNS+2)*CELL_SIZE_X-13, y=7*CELL_SIZE_Y)
@@ -370,7 +376,7 @@ class FIELD(object):
 
         if self.gamevalid == 1:
             self.score += 1
-            self.score_text['text'] = "Blocks left: {}".\
+            self.score_text['text'] = _("Blocks left: {}").\
                                       format(BLOCKS_NUM - self.score)
 
     def create_game_settings(self):
@@ -481,7 +487,7 @@ class FIELD(object):
                 self.remove_all_widjets_from_field(0)
             else:
                 self.play_time['text'] =\
-                    "Time left: {}".format(65 - self.time)
+                    _("Time left: {}").format(65 - self.time)
 
     def __del__(self):
 
@@ -640,7 +646,7 @@ def restart_game(result_time, result):
 
     sub = tk.Toplevel(TK_ROOT)
     sub.transient(TK_ROOT)
-    sub.title('Starting game')
+    sub.title(_('Starting game'))
     sub.configure(background='black')
     sub.geometry('%dx%d+%d+%d' % (ROOT_WIDTH, ROOT_HEIGHT, OSX, OSY))
 
@@ -656,7 +662,7 @@ def restart_game(result_time, result):
         start_game()
         FIELD_.__del__()
         FIELD_.__init__()
-    gameover_text = tk.Label(sub, text="Game over!",
+    gameover_text = tk.Label(sub, text=_("Game over!"),
                              bg="black", font=('arial 45 bold'),
                              fg="white", justify="left")
     gameover_text.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
@@ -672,28 +678,28 @@ def restart_game(result_time, result):
         time_now_readable_format = (time_now.hour*3600 +
                                     time_now.minute*60 + time_now.second)
         res_time = time_now_readable_format - result_time
-        result_text.configure(text="You found the treasure in {} seconds".
+        result_text.configure(text=_("You found the treasure in {} seconds").
                               format(res_time))
     elif result == 0:
         result_text.configure(
-            text="You didn't find the treasure in {} seconds".
+            text=_("You didn't find the treasure in {} seconds").
             format(result_time))
     else:
-        result_text.configure(text="You destroyed the TREASURE !!!")
+        result_text.configure(text=_("You destroyed the TREASURE !!!"))
 
-    restart_text = tk.Label(sub, text="Do you want to replay ?",
+    restart_text = tk.Label(sub, text=_("Do you want to replay ?"),
                             bg="black", fg="white",
                             font="Arial 40 bold", justify="left")
     restart_text.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
                        y=ROOT_HEIGHT/2 + CELL_SIZE_Y)
 
-    yes_answer = tk.Button(sub, text="Yes", width=15, height=3,
+    yes_answer = tk.Button(sub, text=_("Yes"), width=15, height=3,
                            background="white", foreground="black",
                            font="Arial 20 bold", command=get_yes)
     yes_answer.place(x=ROOT_WIDTH/2 - 5*CELL_SIZE_X,
                      y=ROOT_HEIGHT/2 + 2.5*CELL_SIZE_Y)
 
-    no_answer = tk.Button(sub, text="No", width=15, height=3,
+    no_answer = tk.Button(sub, text=_("No"), width=15, height=3,
                           background="white", foreground="black",
                           font="Arial 20 bold", command=get_no)
     no_answer.place(x=ROOT_WIDTH/2 + 2*CELL_SIZE_X,
