@@ -1,0 +1,7 @@
+README.md
+setup.py
+Python2019_Project.egg-info/PKG-INFO
+Python2019_Project.egg-info/SOURCES.txt
+Python2019_Project.egg-info/dependency_links.txt
+Python2019_Project.egg-info/top_level.txt
+package/__init__.py

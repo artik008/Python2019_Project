@@ -29,6 +29,7 @@ OSX = (TK_ROOT.winfo_screenwidth() - ROOT_WIDTH)/2
 OSY = (TK_ROOT.winfo_screenheight() - ROOT_HEIGHT)/2
 TK_ROOT.geometry('%dx%d+%d+%d' % (ROOT_WIDTH, ROOT_HEIGHT, OSX, OSY))
 
+
 BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("images/block.png"))
 STEEL_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("images/steel_block.png"))
 GRASS_BLOCK_IMAGE = ImageTk.PhotoImage(Image.open("images/grass_block.png"))
