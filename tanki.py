@@ -10,7 +10,11 @@ import sys
 
 import gettext
 
-loc = gettext.translation('messages', localedir='locales', languages=['ru'])
+if len(sys.argv) > 1:
+    lang = sys.argv[1]
+else:
+    lang = 'en'
+loc = gettext.translation('messages', localedir='locales', languages=[lang])
 loc.install()
 _ = loc.gettext
 
@@ -708,14 +712,6 @@ def restart_game(result_time, result):
 
 
 if __name__ == '__main__':
-    
-    if len(sys.argv) > 1:
-        lang = sys.argv[1]
-    else:
-        lang = 'en'
-    loc = gettext.translation('messages', localedir='locales', languages=[lang])
-    loc.install()
-    _ = loc.gettext
 
     TK_ROOT.resizable(False, False)
 
