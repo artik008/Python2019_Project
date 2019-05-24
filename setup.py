@@ -16,6 +16,6 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_data={'': '*'},
+    package_data={'':'*'},
     include_package_data=True
 )
