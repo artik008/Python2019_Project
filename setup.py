@@ -8,7 +8,7 @@ setuptools.setup(
     description="Python3 project for cmc msu course",
     long_description_content_type="text/markdown",
     url="https://github.com/artik008/Python2019_Project",
-    packages=setuptools.find_packages() + ['Python2019_Project/images'] ,
+    packages=setuptools.find_packages() + ['Python2019_Project/images'],
     setup_require=["mo_installer"],
     locale_src='./Python2019_Project/locale',
     classifiers=[
