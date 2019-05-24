@@ -1,10 +1,19 @@
-# Игра "Battle City"
-Проект для курса PythonDevelopment2019
+.. Tanks documentation master file, created by
+   sphinx-quickstart on Sun May 12 00:18:01 2019.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
 
-# Постановка задачи
-Реализовать игру по аналогии с игрой "Танчики" с использованием tkinter.
+Добро пожаловать на страницу описания 
+=====================================
+игры "Battle City"
+==================
 
-# Описание
+
+Проект придуман и реализован студентами Бикбулатов Тимур (525 группа) и Шитик Артём (524 группа)
+
+Описание
+--------
+
 Цель игры: найти спрятанное сокровище и наехать на него танком.
 
 У игрока есть возможность перемещаться по полю с помощью стрелок ВВЕРХ/ВНИЗ/ВЛЕВО/ВПРАВО, стрелять по кнопке ПРОБЕЛ
@@ -18,27 +27,30 @@
 
 Время игры ограничено.
 
-## Стартовый экран / экран конца игры
+Стартовый экран / экран конца игры
+----------------------------------
 
-<p align="left">
-  <img src=images/menu.png width="500" title="menu">
-</p>
+.. image:: _static/menu.png
 
-<p align="left">
-  <img src=images/exit.png width="500" title="exit">
-</p>
+*Экран меню*
 
-## Игровой экран
+.. image:: _static/exit.png
 
-<p align="left">
-  <img src=images/tanks.gif width="500" title="game">
-</p>
+*Экран конца игры*
 
-# Запуск игры
+
+Игровой экран
+-------------
+
+.. image:: _static/tanks.gif
+
+Запуск игры
+-----------
+
 `python3 tanki.py`
 
-# Запуск автотестов
+Запуск автотестов
+-----------------
+
 `python -m unittest test.py`
 
-# Сторонняя документация
-Link to [documentation](https://htmlpreview.github.io/?https://raw.githubusercontent.com/artik008/Python2019_Project/master/docs/_build/html/index.html)(documentation)
